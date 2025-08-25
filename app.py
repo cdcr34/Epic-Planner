@@ -107,13 +107,19 @@ with st.sidebar.form("add_backlog", clear_on_submit=True):
         save_tasks()
         st.sidebar.success(f"Added '{backlog_task}' to backlog!")
 
+# Display backlog with buttons
 if st.session_state.backlog:
     with st.sidebar.expander("Your Backlog"):
-        for i, t in enumerate(st.session_state.backlog):
+        # Make a copy to iterate safely
+        backlog_copy = st.session_state.backlog.copy()
+        for i, t in enumerate(backlog_copy):
             st.write(f"📌 {t['task']} (Due: {t['due']})")
             if st.button(f"➡ Add to Today", key=f"move_{i}"):
+                # Append to today's list
                 st.session_state.tasks_today.append({"task": t["task"], "done": False})
-                del st.session_state.backlog[i]
+                # Remove from backlog safely
+                st.session_state.backlog.remove(t)
+                # Save and rerun
                 save_tasks()
                 st.experimental_rerun()
 else:
