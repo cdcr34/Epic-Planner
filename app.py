@@ -5,7 +5,7 @@ import os
 from datetime import date
 
 # -------------------------------
-# Load or initialize task data
+# Initialize state
 # -------------------------------
 if "tasks_today" not in st.session_state:
     st.session_state.tasks_today = []
@@ -17,6 +17,9 @@ if "points" not in st.session_state:
 # Persistence file
 DATA_FILE = "tasks.json"
 
+# -------------------------------
+# Functions for saving/loading
+# -------------------------------
 def load_tasks():
     if os.path.exists(DATA_FILE):
         with open(DATA_FILE, "r") as f:
@@ -36,18 +39,17 @@ def save_tasks():
 load_tasks()
 
 # -------------------------------
-# App title
+# App Title
 # -------------------------------
 st.title("🎯 Fun To-Do List")
 st.write("Complete tasks, earn points, and manage your future plans!")
 
 # -------------------------------
-# Sidebar for Backlog
+# Sidebar: Backlog Management
 # -------------------------------
-# Sidebar for Backlog
 st.sidebar.header("📅 Backlog / Future Tasks")
 
-# Add backlog task form
+# Form to add backlog task
 with st.sidebar.form("add_backlog", clear_on_submit=True):
     backlog_task = st.text_input("Future Task:")
     due_date = st.date_input("Due Date:", min_value=date.today())
@@ -57,7 +59,7 @@ with st.sidebar.form("add_backlog", clear_on_submit=True):
         save_tasks()
         st.sidebar.success(f"Added '{backlog_task}' to backlog!")
 
-# ✅ Backlog display OUTSIDE the form
+# Display backlog with buttons
 if st.session_state.backlog:
     with st.sidebar.expander("Your Backlog"):
         for i, t in enumerate(st.session_state.backlog):
@@ -71,9 +73,9 @@ else:
     st.sidebar.write("No backlog tasks yet!")
 
 # -------------------------------
-# Add today's tasks
+# Main: Today's Task Management
 # -------------------------------
-with st.form("add_task_form"):
+with st.form("add_task_form", clear_on_submit=True):
     new_task = st.text_input("Add a new task for today:")
     submitted = st.form_submit_button("Add Task")
     if submitted and new_task.strip():
@@ -81,9 +83,6 @@ with st.form("add_task_form"):
         save_tasks()
         st.success(f"Task '{new_task}' added!")
 
-# -------------------------------
-# Show today's tasks
-# -------------------------------
 st.subheader("Today's Tasks:")
 if st.session_state.tasks_today:
     for i, t in enumerate(st.session_state.tasks_today):
@@ -91,9 +90,11 @@ if st.session_state.tasks_today:
         with col1:
             if st.checkbox(t["task"], value=t["done"], key=f"task_{i}"):
                 if not t["done"]:
+                    # Mark as done
                     t["done"] = True
                     st.session_state.points += 10
                     st.success("✅ Task completed! +10 XP")
+                    # Show motivation
                     motivation = random.choice([
                         "🔥 Keep going, you're crushing it!",
                         "🚀 Great job! One step closer!",
@@ -101,31 +102,3 @@ if st.session_state.tasks_today:
                         "⭐ Amazing! Keep it up!"
                     ])
                     st.info(motivation)
-                    if all(task["done"] for task in st.session_state.tasks_today):
-                        st.balloons()
-                save_tasks()
-        with col2:
-            if st.button("❌", key=f"delete_today_{i}"):
-                del st.session_state.tasks_today[i]
-                save_tasks()
-                st.experimental_rerun()
-else:
-    st.write("No tasks yet. Add one above!")
-
-# -------------------------------
-# Progress bar
-# -------------------------------
-total = len(st.session_state.tasks_today)
-done = sum(1 for t in st.session_state.tasks_today if t["done"])
-if total > 0:
-    st.subheader("Progress:")
-    st.progress(done / total)
-    st.write(f"{done}/{total} tasks completed")
-
-# -------------------------------
-# XP Display
-# -------------------------------
-st.subheader(f"🏆 XP: {st.session_state.points}")
-
-# Save on exit
-save_tasks()
