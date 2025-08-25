@@ -60,12 +60,15 @@ with st.sidebar.form("add_backlog"):
 if st.session_state.backlog:
     st.sidebar.subheader("Your Backlog:")
     for i, t in enumerate(st.session_state.backlog):
-        st.sidebar.write(f"📌 {t['task']} (Due: {t['due']})")
-        if st.sidebar.button(f"Add to Today", key=f"move_{i}"):
-            st.session_state.tasks_today.append({"task": t["task"], "done": False})
-            del st.session_state.backlog[i]
-            save_tasks()
-            st.experimental_rerun()
+        with st.sidebar.container():
+            st.sidebar.write(f"📌 {t['task']} (Due: {t['due']})")
+            move_key = f"move_{i}"
+            if st.sidebar.button(f"➡ Add to Today", key=move_key):
+                # Move task to today's list
+                st.session_state.tasks_today.append({"task": t["task"], "done": False})
+                del st.session_state.backlog[i]
+                save_tasks()
+                st.experimental_rerun()
 else:
     st.sidebar.write("No backlog tasks yet!")
 
