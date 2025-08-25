@@ -44,10 +44,11 @@ st.write("Complete tasks, earn points, and manage your future plans!")
 # -------------------------------
 # Sidebar for Backlog
 # -------------------------------
+# Sidebar for Backlog
 st.sidebar.header("📅 Backlog / Future Tasks")
 
-# Add backlog task
-with st.sidebar.form("add_backlog"):
+# Add backlog task form
+with st.sidebar.form("add_backlog", clear_on_submit=True):
     backlog_task = st.text_input("Future Task:")
     due_date = st.date_input("Due Date:", min_value=date.today())
     submitted_backlog = st.form_submit_button("Add to Backlog")
@@ -56,18 +57,16 @@ with st.sidebar.form("add_backlog"):
         save_tasks()
         st.sidebar.success(f"Added '{backlog_task}' to backlog!")
 
-# Show backlog tasks
+# ✅ Backlog display OUTSIDE the form
 if st.session_state.backlog:
-    st.sidebar.subheader("Your Backlog:")
-    for i, t in enumerate(st.session_state.backlog):
-        # Create a unique container for each backlog task
-        task_container = st.sidebar.container()
-        task_container.write(f"📌 {t['task']} (Due: {t['due']})")
-        if task_container.button(f"➡ Add to Today", key=f"move_{i}"):
-            st.session_state.tasks_today.append({"task": t["task"], "done": False})
-            del st.session_state.backlog[i]
-            save_tasks()
-            st.experimental_rerun()
+    with st.sidebar.expander("Your Backlog"):
+        for i, t in enumerate(st.session_state.backlog):
+            st.write(f"📌 {t['task']} (Due: {t['due']})")
+            if st.button(f"➡ Add to Today", key=f"move_{i}"):
+                st.session_state.tasks_today.append({"task": t["task"], "done": False})
+                del st.session_state.backlog[i]
+                save_tasks()
+                st.experimental_rerun()
 else:
     st.sidebar.write("No backlog tasks yet!")
 
