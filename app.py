@@ -65,7 +65,7 @@ notes_data = load_notes()
 # -------------------------------
 # App Layout
 # -------------------------------
-st.title("🎯 Fun To-Do List + Quick Notes")
+st.title("🎯 Funnnnnnn To-Do List + Quick Notes")
 
 # -------------------------------
 # Notes Section (Top)
