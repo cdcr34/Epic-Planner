@@ -22,10 +22,12 @@ if "points" not in st.session_state:
 
 # Default notes categories
 default_notes = {
-    "📚 Class 1": "",
-    "📖 Class 2": "",
-    "📝 Class 3": "",
-    "🏠 Personal Chores": "",
+    "📚 Italian": "",
+    "📖 Urban Politics": "",
+    "📝 Intern Class": "",
+    "📚 Seminar": "",
+    "📖 Friends of the Parks": "",
+    "🏠 Personal Tasks": "",
     "🔁 Continuous Tasks": ""
 }
 
